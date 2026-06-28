@@ -10,12 +10,13 @@ use std::{
 
 use crate::validator::validate_ascii;
 
-const FILE_EXTENSION: &str = "ryam";
+pub const FILE_EXTENSION: &str = "ryam";
 
 fn has_validated_file_extension(ext: &OsStr) -> bool {
     match ext.to_str() {
         Some(FILE_EXTENSION) => true,
-        _ => false,
+        Some(_) => false,
+        None => false,
     }
 }
 
