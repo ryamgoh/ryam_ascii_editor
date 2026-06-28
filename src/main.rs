@@ -73,6 +73,22 @@ fn start_app() {
         show_prompt();
 
         // Read user input
+        //
+        // NOTE: stdin behaves differently depending on how the program is run:
+        //
+        //   Interactive terminal (normal use)
+        //     - stdin is the keyboard, which never "ends"
+        //     - read_line() blocks here, waiting for the user to type something
+        //     - Ok(n) with n > 0 when input is received
+        //
+        //   Piped / redirected input (e.g. `cmd | editor` or `editor < file`)
+        //     - stdin is a finite stream of bytes
+        //     - When all input is consumed, read_line() returns Ok(0) — this is EOF
+        //     - If we don't handle Ok(0), the loop would spin forever printing
+        //       "Empty input" on every iteration, because an empty string is not
+        //       an error, it just means "nothing left to read"
+        //
+        // We therefore check bytes_read == 0 and exit the main loop cleanly.
         let mut input = String::new();
         let bytes_read = match io::stdin().read_line(&mut input) {
             Ok(n) => n,
