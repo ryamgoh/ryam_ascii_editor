@@ -1,5 +1,8 @@
 # 📝 ryam_ascii_editor
 
+This is a editor that only works with ascii characters... Why ascii? Because its much lighter!
+Also, I wanted to build my own file extension `.ryam` for fun with validation that can only be used on this editor.
+
 A simple, line-based ASCII text editor written in Rust. Perfect for beginners learning Rust or anyone who needs a lightweight, pure-ASCII text editor.
 
 [![Rust Version](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org)
