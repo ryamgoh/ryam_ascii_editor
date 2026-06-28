@@ -2,5 +2,15 @@
 name = "ryam_ascii_editor"
 version = "0.1.0"
 edition = "2024"
+description = "A simple, line-based ASCII text editor written in Rust"
+license = "MIT"
+repository = "https://github.com/ryamgoh/ascii_editor"
+readme = "README.md"
+keywords = ["editor", "ascii", "text-editor", "cli", "terminal"]
+categories = ["command-line-utilities", "text-editors"]
 
 [dependencies]
+
+[[bin]]
+name = "ryam_ascii_editor"
+path = "src/main.rs"

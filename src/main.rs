@@ -74,9 +74,15 @@ fn start_app() {
 
         // Read user input
         let mut input = String::new();
-        if io::stdin().read_line(&mut input).is_err() {
-            show_error("Failed to read input");
-            continue;
+        let bytes_read = match io::stdin().read_line(&mut input) {
+            Ok(n) => n,
+            Err(_) => {
+                show_error("Failed to read input");
+                continue;
+            }
+        };
+        if bytes_read == 0 {
+            break 'main;
         }
         let input = input.trim().to_string();
 

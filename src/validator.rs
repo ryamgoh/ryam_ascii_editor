@@ -16,3 +16,28 @@ pub fn validate_ascii(s: &str) -> Result<(), String> {
         Err("Contains non-ASCII characters".to_string())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_valid_ascii() {
+        assert!(validate_ascii("Hello World").is_ok());
+        assert!(validate_ascii("ABC123!@#").is_ok());
+        assert!(validate_ascii("").is_ok());
+    }
+
+    #[test]
+    fn test_invalid_unicode() {
+        assert!(validate_ascii("café").is_err());
+        assert!(validate_ascii("日本語").is_err());
+        assert!(validate_ascii("emoji 😀").is_err());
+    }
+
+    #[test]
+    fn test_error_message() {
+        let err = validate_ascii("café").unwrap_err();
+        assert!(err.contains("non-ASCII"));
+    }
+}

@@ -83,3 +83,78 @@ impl Command {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_empty_input() {
+        assert_eq!(Command::parse_input(""), Command::Invalid("Empty input".to_string()));
+        assert_eq!(Command::parse_input("   "), Command::Invalid("Empty input".to_string()));
+    }
+
+    #[test]
+    fn test_help_command() {
+        assert_eq!(Command::parse_input(":help"), Command::Help);
+        assert_eq!(Command::parse_input(":h"), Command::Help);
+        assert_eq!(Command::parse_input("  :help  "), Command::Help);
+    }
+
+    #[test]
+    fn test_list_command() {
+        assert_eq!(Command::parse_input(":list"), Command::List);
+        assert_eq!(Command::parse_input(":l"), Command::List);
+    }
+
+    #[test]
+    fn test_quit_command() {
+        assert_eq!(Command::parse_input(":quit"), Command::Quit);
+        assert_eq!(Command::parse_input(":q"), Command::Quit);
+    }
+
+    #[test]
+    fn test_save_command() {
+        assert_eq!(Command::parse_input(":save"), Command::Save);
+        assert_eq!(Command::parse_input(":s"), Command::Save);
+    }
+
+    #[test]
+    fn test_insert_command() {
+        assert_eq!(Command::parse_input(":insert Hello"), Command::Insert("Hello".to_string()));
+        assert_eq!(Command::parse_input(":i Hello World"), Command::Insert("Hello World".to_string()));
+        assert_eq!(Command::parse_input(":insert"), Command::Invalid("Missing text for insert".to_string()));
+    }
+
+    #[test]
+    fn test_delete_command() {
+        assert_eq!(Command::parse_input(":delete 5"), Command::Delete(5));
+        assert_eq!(Command::parse_input(":d 1"), Command::Delete(1));
+        assert_eq!(Command::parse_input(":delete"), Command::Invalid("Missing line number for delete".to_string()));
+        assert_eq!(Command::parse_input(":delete abc"), Command::Invalid("Invalid line number: 'abc'".to_string()));
+    }
+
+    #[test]
+    fn test_saveas_command() {
+        assert_eq!(Command::parse_input(":saveas new.ryam"), Command::SaveAs("new.ryam".to_string()));
+        assert_eq!(Command::parse_input(":sa other.ryam"), Command::SaveAs("other.ryam".to_string()));
+        assert_eq!(Command::parse_input(":saveas"), Command::Invalid("Missing filename for saveas".to_string()));
+    }
+
+    #[test]
+    fn test_unknown_command() {
+        assert_eq!(Command::parse_input(":unknown"), Command::Invalid("Unknown command: 'unknown'".to_string()));
+    }
+
+    #[test]
+    fn test_text_line() {
+        assert_eq!(Command::parse_input("hello world"), Command::TextLine("hello world".to_string()));
+        assert_eq!(Command::parse_input("some random text"), Command::TextLine("some random text".to_string()));
+    }
+
+    #[test]
+    fn test_empty_command() {
+        assert_eq!(Command::parse_input(":"), Command::Invalid("Empty command".to_string()));
+        assert_eq!(Command::parse_input(":   "), Command::Invalid("Empty command".to_string()));
+    }
+}

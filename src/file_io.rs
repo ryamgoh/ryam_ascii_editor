@@ -83,3 +83,70 @@ pub fn write_file(filename: &str, lines: &[String]) -> Result<(), String> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    fn temp_ryam_path(name: &str) -> String {
+        let dir = std::env::temp_dir();
+        dir.join(format!("test_io_{}.ryam", name)).to_str().unwrap().to_string()
+    }
+
+    #[test]
+    fn test_rejects_invalid_extension() {
+        let result = read_file("bad.txt");
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Invalid file path or extension"));
+    }
+
+    #[test]
+    fn test_rejects_invalid_extension_write() {
+        let result = write_file("bad.txt", &vec!["hello".to_string()]);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Invalid extension"));
+    }
+
+    #[test]
+    fn test_read_nonexistent_file() {
+        let result = read_file("nonexistent.ryam");
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_round_trip() {
+        let path = temp_ryam_path("round_trip");
+        let _ = fs::remove_file(&path);
+
+        let lines = vec![
+            "first line".to_string(),
+            "second line".to_string(),
+            "third line".to_string(),
+        ];
+
+        assert!(write_file(&path, &lines).is_ok());
+        let loaded = read_file(&path).unwrap();
+        assert_eq!(loaded, lines);
+
+        let _ = fs::remove_file(&path);
+    }
+
+    #[test]
+    fn test_rejects_non_ascii_on_write() {
+        let result = write_file("bad.ryam", &vec!["hello".to_string(), "café".to_string()]);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_rejects_non_ascii_on_read() {
+        let path = temp_ryam_path("non_ascii");
+        let _ = fs::remove_file(&path);
+
+        fs::write(&path, "hello\ncafé\n").unwrap();
+        let result = read_file(&path);
+        assert!(result.is_err());
+
+        let _ = fs::remove_file(&path);
+    }
+}
