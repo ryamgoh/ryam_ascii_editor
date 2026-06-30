@@ -20,7 +20,7 @@ fn has_validated_file_extension(ext: &OsStr) -> bool {
     }
 }
 
-fn get_validated_path_buffer(filename: &str, require_exists: bool) -> Option<PathBuf> {
+pub fn get_validated_path_buffer(filename: &str, require_exists: bool) -> Option<PathBuf> {
     let path = Path::new(filename);
 
     // 1. Check if exists

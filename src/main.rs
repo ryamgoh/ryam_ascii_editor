@@ -10,7 +10,6 @@ use std::{env, io};
 use crate::{
     commands::Command,
     editor::Editor,
-    file_io::FILE_EXTENSION,
     ui::{
         clear_screen, confirm_action, show_error, show_header, show_help, show_info, show_lines,
         show_preview, show_prompt, show_success,
@@ -24,18 +23,37 @@ fn main() {
     start_app();
 }
 
+struct Config {
+    file_path: String,
+}
+
+fn parse_config(args: &[String]) -> Config {
+    if args.len() < 2 {
+        panic!("Not enough args")
+    }
+    let file_path = args[1].clone();
+    Config { file_path }
+}
+
 fn start_app() {
     println!("Starting...");
     // Get command line arguments
     let args: Vec<String> = env::args().collect();
-    let filename = if args.len() > 1 {
-        args[1].clone()
-    } else {
-        format!("untitled.{}", FILE_EXTENSION)
+    let config = parse_config(&args);
+    let validated_filename = match file_io::get_validated_path_buffer(&config.file_path, true) {
+        Some(path) => {
+            println!("Proceeding with file: {}", path.display());
+            path.to_str()
+                .expect("Invalid UTF-8 in filename")
+                .to_string()
+        }
+        None => {
+            panic!("Failed! {}", config.file_path);
+        }
     };
 
     // Create and load editor
-    let mut editor = Editor::new(&filename);
+    let mut editor = Editor::new(&validated_filename);
 
     // Try to load file
     match editor.load() {
